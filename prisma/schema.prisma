@@ -15,7 +15,8 @@ model Usuario {
   ativo   Boolean  @default(true)
   admin   Boolean  @default(false)
 
-  pedidos Pedido[]
+  pedidos  Pedido[]
+  enderecos Endereco[]
 }
 
 model Pedido {
@@ -26,9 +27,11 @@ model Pedido {
   usuarioId  Int
   usuario    Usuario @relation(fields: [usuarioId], references: [id])
 
+  enderecoId Int
+  endereco   Endereco @relation(fields: [enderecoId], references: [id])
+
   itens      ItemPedido[]
 }
-
 model ItemPedido {
   id             Int    @id @default(autoincrement())
   quantidade     Int
@@ -38,4 +41,22 @@ model ItemPedido {
 
   pedidoId       Int
   pedido         Pedido @relation(fields: [pedidoId], references: [id])
+}
+
+model Endereco {
+  id          Int      @id @default(autoincrement())
+  rua         String
+  numero      String
+  bairro      String
+  cidade      String
+  estado      String
+  cep         String
+  complemento String?
+
+  principal   Boolean @default(false)
+
+  usuarioId   Int
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+
+  pedidos     Pedido[]
 }
