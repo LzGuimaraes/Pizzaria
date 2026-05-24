@@ -11,7 +11,7 @@ app.use(express.json());
 const cors = require('cors');
 
 app.use(cors({
-  origin: 'https://pizzaria-front-rho.vercel.app/',
+  origin: 'https://pizzaria-front-rho.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
