@@ -1,30 +1,35 @@
 const express = require('express');
-const usuarioRoutes = require('./routes/usuario.routes');
+const { auth } = require('./middlewares/auth.middleware');
+
+const usuarioRoutes = require('./routes/usuario.routes');   // suas rotas de usuário
 const pedidoRoutes = require('./routes/pedido.routes');
-const errorMiddleware = require('./middlewares/error.middleware');
+const adminPedidoRoutes = require('./routes/admin.pedido.routes');
 
 const app = express();
-
 app.use(express.json());
+
 const cors = require('cors');
 
 app.use(cors({
   origin: 'http://localhost:5173',
-  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
+// Rotas públicas (sem auth)
+app.use('/usuarios', usuarioRoutes); 
 
-// Rotas
-app.use('/usuarios', usuarioRoutes);
+// ✅ Rotas protegidas — auth aplicado aqui, vale para tudo abaixo
+app.use(auth);
+
 app.use('/pedidos', pedidoRoutes);
+app.use('/admin/pedidos', adminPedidoRoutes); // adminOnly aplicado dentro do próprio arquivo
 
-// Health check
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
-
-// 404
-app.use((req, res) => res.status(404).json({ error: 'Rota não encontrada.' }));
-
-// Tratamento de erros (deve ser o último middleware)
-app.use(errorMiddleware);
+// Handler de erros global
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  res.status(status).json({ error: err.message || 'Erro interno.' });
+});
 
 module.exports = app;

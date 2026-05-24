@@ -1,22 +1,18 @@
 const { Router } = require('express');
 const pedidoController = require('../controllers/pedido.controller');
-const { auth, adminOnly } = require('../middlewares/auth.middleware');
-
+const { adminOnly } = require('../middlewares/auth.middleware');
+ 
 const router = Router();
-
-// todas admin-only
-router.use(auth, adminOnly);
-
-// ver todos pedidos (painel)
-router.get('/pedidos', pedidoController.listar);
-
-// ver detalhes
-router.get('/pedidos/:id', pedidoController.buscarPorId);
-
-// atualizar status
-router.patch('/pedidos/:id/status', pedidoController.atualizarStatus);
-
-// deletar (opcional no painel)
-router.delete('/pedidos/:id', pedidoController.deletar);
-
+ 
+// Obs: auth já é aplicado globalmente antes de chegar aqui (no app.js/index.js)
+// adminOnly garante que apenas admins acessem estas rotas
+ 
+router.use(adminOnly);
+ 
+router.get('/', pedidoController.listar);
+router.get('/:id', pedidoController.buscarPorId);
+router.post('/', pedidoController.criar);
+router.patch('/:id/status', pedidoController.atualizarStatus);
+router.delete('/:id', pedidoController.deletar);
+ 
 module.exports = router;
